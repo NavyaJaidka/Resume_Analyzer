@@ -33,7 +33,7 @@ export default async function handler(
       maxFilesSize: 10 * 1024 * 1024, // 10MB
     });
 
-    const [fields, files] = await new Promise<[multiparty.Field[], multiparty.File[][]]>((resolve, reject) => {
+    const [fields, files] = await new Promise<[multiparty.Field[], { [key: string]: multiparty.File[] }]>((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
         if (err) reject(err);
         else resolve([fields, files]);
