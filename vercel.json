@@ -9,10 +9,5 @@
       "memory": 1024,
       "maxDuration": 30
     }
-  },
-  "env": {
-    "VITE_API_URL": {
-      "description": "API base URL for frontend (optional - defaults to /api in production)"
-    }
   }
 }
