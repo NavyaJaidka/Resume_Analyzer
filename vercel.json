@@ -4,10 +4,6 @@
   "installCommand": "npm install",
   "framework": "vite",
   "outputDirectory": "dist",
-  "serverless": {
-    "memory": 1024,
-    "maxDuration": 60
-  },
   "functions": {
     "api/**/*.ts": {
       "memory": 1024,
