@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { generateOptimizedResume } from "../../backend/src/services/resumeService";
+import { generateOptimizedResume } from "../../shared/resumeService";
 
 export default async function handler(
   req: VercelRequest,

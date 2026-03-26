@@ -1,5 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { getResumeById } from "../../backend/src/services/resumeService";
+import { getResumeById } from "../../shared/resumeService";
 
 export default async function handler(
   req: VercelRequest,

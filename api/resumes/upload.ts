@@ -1,6 +1,22 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import multer from "multer";
-import { parseResume, saveResume } from "../../backend/src/services/resumeService";
+import { parseResume, saveResume } from "../../shared/resumeService";
+
+interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+  destination?: string;
+  filename?: string;
+  path?: string;
+}
+
+interface VercelRequestWithFile extends VercelRequest {
+  file?: MulterFile;
+}
 
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -34,7 +50,7 @@ export const config = {
 };
 
 export default async function handler(
-  req: VercelRequest,
+  req: VercelRequestWithFile,
   res: VercelResponse
 ) {
   if (req.method !== "POST") {
