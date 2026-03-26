@@ -1,0 +1,22 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "vite",
+  "outputDirectory": "dist",
+  "serverless": {
+    "memory": 1024,
+    "maxDuration": 60
+  },
+  "functions": {
+    "api/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "VITE_API_URL": {
+      "description": "API base URL for frontend (optional - defaults to /api in production)"
+    }
+  }
+}

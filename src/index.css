@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    --background: 40 25% 97%;
+    --foreground: 200 18% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 200 18% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 200 18% 12%;
+
+    --primary: 160 45% 22%;
+    --primary-foreground: 40 25% 97%;
+
+    --secondary: 40 15% 92%;
+    --secondary-foreground: 200 18% 20%;
+
+    --muted: 40 12% 94%;
+    --muted-foreground: 200 8% 48%;
+
+    --accent: 24 75% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 40 12% 89%;
+    --input: 40 12% 89%;
+    --ring: 160 45% 22%;
+
+    --radius: 0.625rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Custom tokens */
+    --score-excellent: 160 60% 40%;
+    --score-good: 80 55% 45%;
+    --score-fair: 40 80% 50%;
+    --score-poor: 0 70% 50%;
+    --surface-elevated: 0 0% 100%;
+    --hero-gradient-from: 160 45% 22%;
+    --hero-gradient-to: 168 55% 16%;
+  }
+
+  .dark {
+    --background: 210 15% 10%;
+    --foreground: 40 15% 90%;
+
+    --card: 210 14% 13%;
+    --card-foreground: 40 15% 90%;
+
+    --popover: 210 14% 13%;
+    --popover-foreground: 40 15% 90%;
+
+    --primary: 160 50% 42%;
+    --primary-foreground: 210 15% 8%;
+
+    --secondary: 210 12% 18%;
+    --secondary-foreground: 40 15% 85%;
+
+    --muted: 210 12% 16%;
+    --muted-foreground: 210 8% 55%;
+
+    --accent: 24 75% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 12% 20%;
+    --input: 210 12% 20%;
+    --ring: 160 50% 42%;
+
+    --score-excellent: 160 55% 45%;
+    --score-good: 80 50% 50%;
+    --score-fair: 40 75% 55%;
+    --score-poor: 0 65% 55%;
+    --surface-elevated: 210 14% 15%;
+    --hero-gradient-from: 160 45% 18%;
+    --hero-gradient-to: 168 50% 12%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tight;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+    overflow-wrap: break-word;
+  }
+}
+
+@layer utilities {
+  .score-excellent { color: hsl(var(--score-excellent)); }
+  .score-good { color: hsl(var(--score-good)); }
+  .score-fair { color: hsl(var(--score-fair)); }
+  .score-poor { color: hsl(var(--score-poor)); }
+
+  .bg-score-excellent { background-color: hsl(var(--score-excellent)); }
+  .bg-score-good { background-color: hsl(var(--score-good)); }
+  .bg-score-fair { background-color: hsl(var(--score-fair)); }
+  .bg-score-poor { background-color: hsl(var(--score-poor)); }
+
+  .surface-elevated {
+    background-color: hsl(var(--surface-elevated));
+  }
+
+  .hero-gradient {
+    background: linear-gradient(135deg, hsl(var(--hero-gradient-from)), hsl(var(--hero-gradient-to)));
+  }
+
+  .text-gradient-primary {
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(160 55% 35%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; filter: blur(4px); }
+  to { opacity: 1; filter: blur(0px); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slide-left {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
