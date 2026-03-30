@@ -8,7 +8,7 @@
     "api/**/*.ts": {
       "memory": 1024,
       "maxDuration": 30,
-      "includeFiles": ["tsconfig.api.json"]
+      "includeFiles": "tsconfig.api.json"
     }
   }
 }
