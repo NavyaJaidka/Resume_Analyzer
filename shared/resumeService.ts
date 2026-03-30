@@ -7,9 +7,6 @@ import { ResumeData, AnalysisResult, StoredAnalysis } from './types';
 import * as db from './db';
 import * as scoringEngine from './scoringEngine';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdf = require('pdf-parse');
-
 interface MulterFile {
   fieldname: string;
   originalname: string;
