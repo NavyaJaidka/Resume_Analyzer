@@ -1,18 +1,4 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import multiparty from "multiparty";
-import { parseResume, saveResume } from "../../shared/resumeService";
-
-interface MulterFile {
-  fieldname: string;
-  originalname: string;
-  encoding: string;
-  mimetype: string;
-  size: number;
-  buffer: Buffer;
-  destination?: string;
-  filename?: string;
-  path?: string;
-}
 
 export const config = {
   api: {
@@ -29,74 +15,14 @@ export default async function handler(
   }
 
   try {
-    const form = new multiparty.Form({
-      maxFilesSize: 10 * 1024 * 1024, // 10MB
+    // Simple test response first
+    res.status(200).json({
+      message: "API is working",
+      timestamp: new Date().toISOString(),
+      method: req.method
     });
-
-    const [fields, files] = await new Promise<[multiparty.Field[], { [key: string]: multiparty.File[] }]>((resolve, reject) => {
-      form.parse(req, (err, fields, files) => {
-        if (err) reject(err);
-        else resolve([fields, files]);
-      });
-    });
-
-    const resumeFiles = files.resume || [];
-    if (resumeFiles.length === 0) {
-      return res.status(400).json({ error: "No file uploaded" });
-    }
-
-    const file = resumeFiles[0];
-
-    // Validate file type
-    const allowedMimeTypes = [
-      "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    ];
-    const allowedExtensions = [".pdf", ".docx"];
-
-    const contentType = file.headers['content-type'] || '';
-    const hasValidMimeType = allowedMimeTypes.includes(contentType);
-    const hasValidExtension = allowedExtensions.some((ext) =>
-      file.originalFilename?.toLowerCase().endsWith(ext)
-    );
-
-    if (!hasValidMimeType && !hasValidExtension) {
-      return res.status(400).json({ error: "Only PDF and DOCX files are allowed" });
-    }
-
-    // Read the file stream into a buffer
-    const chunks: Buffer[] = [];
-    for await (const chunk of file) {
-      chunks.push(chunk);
-    }
-    const fileBuffer = Buffer.concat(chunks);
-
-    // Convert to expected format
-    const resumeFile: MulterFile = {
-      fieldname: 'resume',
-      originalname: file.originalFilename || 'unknown',
-      encoding: '7bit',
-      mimetype: contentType || 'application/octet-stream',
-      size: fileBuffer.length,
-      buffer: fileBuffer,
-      destination: '',
-      filename: file.originalFilename || 'unknown',
-      path: '',
-    };
-
-    try {
-      const resumeData = await parseResume(resumeFile);
-      const savedResume = await saveResume(resumeData);
-      res.status(201).json(savedResume);
-    } catch (parseError: any) {
-      console.error("Error parsing resume:", parseError);
-      res.status(500).json({ error: "Failed to parse resume" });
-    }
   } catch (error: any) {
-    console.error("Error uploading resume:", error);
-    if (error.message?.includes("maxFilesSize")) {
-      return res.status(400).json({ error: "File must be under 10MB" });
-    }
-    res.status(500).json({ error: "Failed to upload resume" });
+    console.error("Error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 }
