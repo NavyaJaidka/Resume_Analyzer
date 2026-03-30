@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import mammoth from 'mammoth';
 import { jsPDF } from 'jspdf';
 import * as crypto from 'crypto';
+import { Readable } from 'stream';
 import { ResumeData, AnalysisResult, StoredAnalysis } from './types';
 import * as db from './db';
 import * as scoringEngine from './scoringEngine';
@@ -35,8 +36,8 @@ export const parseResume = async (file: MulterFile): Promise<ResumeData> => {
       text = file.buffer.toString('utf8').replace(/[^\x20-\x7E]/g, ' ');
     }
   } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-    // For DOCX, we need to use mammoth with buffer
-    const result = await mammoth.extractRawText({ buffer: file.buffer });
+    // For DOCX, mammoth expects a buffer or arrayBuffer
+    const result = await mammoth.extractRawText({ arrayBuffer: file.buffer });
     text = result.value;
   } else {
     // For other text files, convert buffer to string
