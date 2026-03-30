@@ -14,7 +14,11 @@
     "types": ["@vercel/node"]
   },
   "include": [
-    "api/**/*",
-    "shared/**/*"
+    "api/**/*"
+  ],
+  "exclude": [
+    "shared/**/*",
+    "src/**/*",
+    "node_modules"
   ]
 }
