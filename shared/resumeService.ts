@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import mammoth from 'mammoth';
 import { jsPDF } from 'jspdf';
-import { randomBytes } from 'crypto';
+import * as crypto from 'crypto';
 import { ResumeData, AnalysisResult, StoredAnalysis } from './types';
 import * as db from './db';
 import * as scoringEngine from './scoringEngine';
@@ -25,19 +25,22 @@ export const parseResume = async (file: MulterFile): Promise<ResumeData> => {
   let text = '';
   if (file.mimetype === 'application/pdf') {
     try {
-      const dataBuffer = fs.readFileSync(file.path);
+      // Use buffer directly instead of reading from file path
+      const dataBuffer = file.buffer;
       const data = await pdf(dataBuffer);
       text = data.text;
     } catch (err: any) {
       console.error("PDF Parsing Error:", err.message);
-      // Fallback: If pdf-parse totally fails (e.g. malformed PDF), just extract raw buffer strings or return empty
-      text = fs.readFileSync(file.path, 'utf8').replace(/[^\x20-\x7E]/g, ' ');
+      // Fallback: If pdf-parse totally fails (e.g. malformed PDF), extract from buffer
+      text = file.buffer.toString('utf8').replace(/[^\x20-\x7E]/g, ' ');
     }
   } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-    const result = await mammoth.extractRawText({ path: file.path });
+    // For DOCX, we need to use mammoth with buffer
+    const result = await mammoth.extractRawText({ buffer: file.buffer });
     text = result.value;
   } else {
-    text = fs.readFileSync(file.path, 'utf8');
+    // For other text files, convert buffer to string
+    text = file.buffer.toString('utf8');
   }
 
   // Ported parsing logic
