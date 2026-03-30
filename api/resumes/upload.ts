@@ -54,7 +54,8 @@ export default async function handler(
     ];
     const allowedExtensions = [".pdf", ".docx"];
 
-    const hasValidMimeType = allowedMimeTypes.includes(file.headers['content-type'] || '');
+    const contentType = file.headers['content-type'] || '';
+    const hasValidMimeType = allowedMimeTypes.includes(contentType);
     const hasValidExtension = allowedExtensions.some((ext) =>
       file.originalFilename?.toLowerCase().endsWith(ext)
     );
@@ -63,27 +64,25 @@ export default async function handler(
       return res.status(400).json({ error: "Only PDF and DOCX files are allowed" });
     }
 
+    // Read the file stream into a buffer
+    const chunks: Buffer[] = [];
+    for await (const chunk of file) {
+      chunks.push(chunk);
+    }
+    const fileBuffer = Buffer.concat(chunks);
+
     // Convert to expected format
     const resumeFile: MulterFile = {
       fieldname: 'resume',
       originalname: file.originalFilename || 'unknown',
       encoding: '7bit',
-      mimetype: file.headers['content-type'] || 'application/octet-stream',
-      size: file.size,
-      buffer: file._readableState ? Buffer.alloc(0) : file, // Handle buffer properly
+      mimetype: contentType || 'application/octet-stream',
+      size: fileBuffer.length,
+      buffer: fileBuffer,
       destination: '',
       filename: file.originalFilename || 'unknown',
       path: '',
     };
-
-    // If file is a readable stream, read it into buffer
-    if (file._readableState) {
-      const chunks: Buffer[] = [];
-      for await (const chunk of file) {
-        chunks.push(chunk);
-      }
-      resumeFile.buffer = Buffer.concat(chunks);
-    }
 
     try {
       const resumeData = await parseResume(resumeFile);
