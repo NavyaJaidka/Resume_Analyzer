@@ -6,9 +6,9 @@
   "outputDirectory": "dist",
   "functions": {
     "api/**/*.ts": {
+      "runtime": "@vercel/node@2.16.0",
       "memory": 1024,
-      "maxDuration": 30,
-      "includeFiles": "tsconfig.api.json"
+      "maxDuration": 30
     }
   }
 }
