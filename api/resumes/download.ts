@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+import * as resumeService from "../../backend/src/services/resumeService";
 
 export default async function handler(
   req: VercelRequest,
@@ -10,15 +11,17 @@ export default async function handler(
 
   try {
     const { resumeId } = req.body;
+    if (typeof resumeId !== "string") {
+      return res.status(400).json({ error: "Invalid resume ID" });
+    }
 
-    res.status(200).json({
-      message: "Download API is working",
-      timestamp: new Date().toISOString(),
-      endpoint: "download",
-      resumeId: resumeId
-    });
+    const pdfBuffer = await resumeService.generateOptimizedResume(resumeId);
+    
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=optimized_resume_${resumeId}.pdf`);
+    res.status(200).send(pdfBuffer);
   } catch (error: any) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error downloading resume:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
   }
 }

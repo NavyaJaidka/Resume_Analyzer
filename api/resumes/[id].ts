@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+import * as resumeService from "../../backend/src/services/resumeService";
 
 export default async function handler(
   req: VercelRequest,
@@ -10,15 +11,18 @@ export default async function handler(
 
   try {
     const { id } = req.query;
+    if (typeof id !== "string") {
+      return res.status(400).json({ error: "Invalid resume ID" });
+    }
 
-    res.status(200).json({
-      message: "Get resume API is working",
-      timestamp: new Date().toISOString(),
-      endpoint: "get-resume",
-      id: id
-    });
+    const resume = await resumeService.getResumeById(id);
+    if (!resume) {
+      return res.status(404).json({ error: "Resume not found" });
+    }
+
+    res.status(200).json(resume);
   } catch (error: any) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error getting resume:", error);
+    res.status(500).json({ error: error.message || "Internal server error" });
   }
 }

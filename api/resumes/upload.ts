@@ -1,4 +1,7 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
+import * as resumeService from "../../backend/src/services/resumeService";
+import multiparty from "multiparty";
+import fs from "fs";
 
 export const config = {
   api: {
@@ -14,15 +17,32 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  try {
-    // Simple test response first
-    res.status(200).json({
-      message: "API is working",
-      timestamp: new Date().toISOString(),
-      method: req.method
-    });
-  } catch (error: any) {
-    console.error("Error:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
+  const form = new multiparty.Form();
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error("Form parsing error:", err);
+      return res.status(400).json({ error: "Failed to parse form data" });
+    }
+
+    const file = files.resume?.[0];
+    if (!file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    try {
+      const buffer = fs.readFileSync(file.path);
+      const resumeData = await resumeService.parseResume({
+        originalname: file.originalFilename,
+        mimetype: file.headers["content-type"],
+        buffer: buffer,
+      });
+
+      const savedResume = await resumeService.saveResume(resumeData);
+      res.status(201).json(savedResume);
+    } catch (error: any) {
+      console.error("Error uploading resume:", error);
+      res.status(500).json({ error: error.message || "Failed to upload and parse resume" });
+    }
+  });
 }

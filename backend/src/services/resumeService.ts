@@ -9,23 +9,37 @@ import * as scoringEngine from './scoringEngine';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const pdf = require('pdf-parse');
 
-export const parseResume = async (file: Express.Multer.File): Promise<ResumeData> => {
+export interface ParsableFile {
+  originalname: string;
+  mimetype: string;
+  buffer?: Buffer;
+  path?: string;
+}
+
+export const parseResume = async (file: ParsableFile): Promise<ResumeData> => {
   let text = '';
+  const dataBuffer = file.buffer || (file.path ? fs.readFileSync(file.path) : null);
+  
+  if (!dataBuffer) {
+    throw new Error('No file data provided');
+  }
+
   if (file.mimetype === 'application/pdf') {
     try {
-      const dataBuffer = fs.readFileSync(file.path);
       const data = await pdf(dataBuffer);
       text = data.text;
-    } catch (err: any) {
-      console.error("PDF Parsing Error:", err.message);
-      // Fallback: If pdf-parse totally fails (e.g. malformed PDF), just extract raw buffer strings or return empty
-      text = fs.readFileSync(file.path, 'utf8').replace(/[^\x20-\x7E]/g, ' '); 
+    } catch (err) {
+      const error = err as Error;
+      console.error("PDF Parsing Error:", error.message);
+      // Fallback: If pdf-parse totally fails (e.g. malformed PDF), just extract raw strings
+      text = dataBuffer.toString('utf8').replace(/[^\x20-\x7E]/g, ' '); 
     }
   } else if (file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-    const result = await mammoth.extractRawText({ path: file.path });
+    const mammothInput = file.path ? { path: file.path } : { buffer: dataBuffer };
+    const result = await mammoth.extractRawText(mammothInput as any);
     text = result.value;
   } else {
-    text = fs.readFileSync(file.path, 'utf8');
+    text = dataBuffer.toString('utf8');
   }
 
   // Ported parsing logic
