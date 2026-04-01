@@ -50,7 +50,7 @@ export async function downloadResume(resumeId: string) {
   // For now, let's assume it still returns a blob if we didn't refactor it to the new format yet.
   // Actually, the user specifically asked for /api/upload.ts, /api/analyze.ts, /api/history.ts.
   // I should check if download.ts exists in root /api.
-  const response = await fetch(`${API_BASE_URL}/resumes/download`, {
+  const response = await fetch(`${API_BASE_URL}/download`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
