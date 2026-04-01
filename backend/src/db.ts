@@ -1,10 +1,14 @@
 import { Pool } from 'pg';
 import { ResumeData, AnalysisResult, StoredAnalysis } from './types';
 
-
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
+
+export { pool };
 
 export const saveResume = async (resume: ResumeData): Promise<ResumeData> => {
   await pool.query(
